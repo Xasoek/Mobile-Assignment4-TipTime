@@ -49,9 +49,17 @@ fun TipTimeLayout() {
         mutableStateOf("")
     }
 
-    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    var tipInput by remember {
+        mutableStateOf("")
+    }
 
-    val tip = calculateTip(amount)
+    val amount = amountInput.toDoubleOrNull() ?: 0.0
+    val tipPercent = tipInput.toDoubleOrNull() ?: 15.0
+
+    val tip = calculateTip(
+        amount = amount,
+        tipPercent = tipPercent
+    )
 
     Column(
         modifier = Modifier
@@ -72,6 +80,16 @@ fun TipTimeLayout() {
         EditNumberField(
             value = amountInput,
             onValueChange = { amountInput = it },
+            label = "Bill Amount",
+            modifier = Modifier
+                .padding(bottom = 32.dp)
+                .fillMaxWidth()
+        )
+
+        EditNumberField(
+            value = tipInput,
+            onValueChange = { tipInput = it },
+            label = "Tip Percentage",
             modifier = Modifier
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
@@ -90,14 +108,14 @@ fun TipTimeLayout() {
 fun EditNumberField(
     value: String,
     onValueChange: (String) -> Unit,
+    label: String,
     modifier: Modifier = Modifier
 ) {
-
     TextField(
         value = value,
         onValueChange = onValueChange,
         singleLine = true,
-        label = { Text("Bill Amount") },
+        label = { Text(label) },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number
         ),
@@ -107,10 +125,14 @@ fun EditNumberField(
 
 private fun calculateTip(
     amount: Double,
-    tipPercent: Double = 15.0
+    tipPercent: Double = 15.0,
+    roundUp: Boolean = false
 ): String {
+    var tip = tipPercent / 100 * amount
 
-    val tip = tipPercent / 100 * amount
+    if (roundUp) {
+        tip = kotlin.math.ceil(tip)
+    }
 
     return NumberFormat.getCurrencyInstance().format(tip)
 }

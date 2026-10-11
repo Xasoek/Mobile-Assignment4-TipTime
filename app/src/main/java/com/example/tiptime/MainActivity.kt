@@ -28,6 +28,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tiptime.ui.theme.TipTimeTheme
 import java.text.NumberFormat
+import androidx.compose.material3.Switch
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
 
 class MainActivity : ComponentActivity() {
 
@@ -53,12 +56,17 @@ fun TipTimeLayout() {
         mutableStateOf("")
     }
 
+    var roundUp by remember {
+        mutableStateOf(false)
+    }
+
     val amount = amountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipInput.toDoubleOrNull() ?: 15.0
 
     val tip = calculateTip(
         amount = amount,
-        tipPercent = tipPercent
+        tipPercent = tipPercent,
+        roundUp = roundUp
     )
 
     Column(
@@ -94,6 +102,21 @@ fun TipTimeLayout() {
                 .padding(bottom = 32.dp)
                 .fillMaxWidth()
         )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = "Round up tip?")
+
+            Switch(
+                checked = roundUp,
+                onCheckedChange = { roundUp = it }
+            )
+        }
 
         Text(
             text = "Tip Amount: $tip",
